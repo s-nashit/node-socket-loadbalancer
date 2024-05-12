@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+       
+    
+</head>
+<body>
+    <div>
+        <h1>My Chat App</h1>
+        <form id = "form">
+        <div id="msgContainer">
+            
+            <input type="text" id="name">
+        </div>
+        <div class="chat">
+            <ul type='none' class="message-left" id = "own">
+                <li>
+                    <p id="ownmsg">My Message</p>
+                    <p id = 'owndate'>4 March, 10:14</p>
+                </li>
+            </ul>
+            <ul type="none">
+                <li class="message-left" id="own">
+                    <p>Friend's Message</p>
+                    <p>4 March, 10:14</p>
+                </li>
+            </ul>
+            <ul>
+                <p>Typing ...</p>
+            </ul>
+        </div>
+        
+            <input type="text" id = "message">
+            <button type="submit">send</button>
+        </form>
+        <h3 id="total">Total number of clients: 2</h3>
+    </div>
+
+    <script src="socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io()
+        total = document.getElementById('total')
+        name = document.getElementById('name')
+        form = document.getElementById('form')
+        message = document.getElementById('message')
+        socket.on('total users', (data)=>{
+            total.innerText = `Total number of clients: ${data}`
+        })
+
+
+
+        function sendMessage(){
+            // console.log(message.value)
+            data = {
+                name: name.value,
+                message: message.value,
+                date: new Date().toLocaleString()
+
+            }
+            console.log(data)
+            socket.emit('message', data)
+            socket.on('message', (data)=>{
+            // total.innerText = `Total number of clients: ${data}`
+            console.log(data)
+            addMessage(data)
+        }
+        )
+        }
+
+        function addMessage(data){
+            console.log(data)
+            msgdata = `<li class="message-left">
+                <p>${data.message}</p>
+                <p>${data.date}</p>
+            </li>`
+            document.getElementById('own').innerHTML += msgdata
+        }
+
+
+        form.addEventListener('submit', (e)=>{
+            e.preventDefault();
+            sendMessage();
+            // addMessage()
+            // own();
+            //socket.emit('client', data)
+        })
+
+
+
+
+
+
+        
+    </script>
+    
+</body>
+</html>
